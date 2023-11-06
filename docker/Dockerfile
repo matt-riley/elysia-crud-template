@@ -1,4 +1,4 @@
-FROM debian:11.8-slim as builder
+FROM debian:12.2-slim as builder
 WORKDIR /app
 
 RUN apt update
