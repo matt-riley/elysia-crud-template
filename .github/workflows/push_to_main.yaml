@@ -37,6 +37,8 @@ jobs:
         with:
           file: ./docker/Dockerfile
           context: .
+          cache-to: type=gha
+          cache-from: type=gha
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
