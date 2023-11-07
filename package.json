@@ -1,15 +1,17 @@
 {
   "name": "elysia-crud-template",
-  "version": "1.0.50",
+  "version": "0.0.1",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts"
   },
   "dependencies": {
+    "@elysiajs/swagger": "0.7.4",
     "elysia": "latest"
   },
   "devDependencies": {
-    "bun-types": "latest"
+    "bun-types": "latest",
+    "typescript": "5.2.2"
   },
   "module": "src/index.js"
 }
