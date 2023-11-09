@@ -1,8 +1,7 @@
 import { Elysia } from "elysia";
 import { swagger } from "@elysiajs/swagger";
 import pkg from "../package.json";
-import * as handlers from "./handlers";
-import * as types from "./types";
+import * as routes from "./routes";
 
 const app = new Elysia();
 
@@ -20,26 +19,19 @@ app.use(
 app.get("/", () => "Hello Elysia");
 
 app
-  .model({
-    quote: types.quote,
-    quotes: types.quotes,
-    intId: types.numeric_id,
-  })
-  .group("/quotes", (app) =>
-    app
-      .get("/", handlers.get_quotes, {
-        type: "json",
-        response: "quotes",
-      })
-      .get("/:id", handlers.get_quote, {
-        type: "json",
-        response: "quote",
-        params: "intId",
-      })
-      .post("/", handlers.post_quote, {
-        body: "quote",
-        type: "json",
-      }),
+  .group(
+    "/quotes",
+    (app) => app.use(routes.get_quote),
+    // .get("/", handlers.get_quotes, {
+    //   type: "json",
+    //   response: "quotes",
+    // })
+    // .get("/:id", handlers.get_quote, {
+    // })
+    // .post("/", handlers.post_quote, {
+    //   body: "quote",
+    //   type: "json",
+    // }),
   )
   .listen(3001);
 
