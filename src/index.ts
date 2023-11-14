@@ -21,13 +21,8 @@ app.get("/", () => "Hello Elysia");
 app
   .group(
     "/quotes",
-    (app) => app.use(routes.get_quote),
-    // .get("/", handlers.get_quotes, {
-    //   type: "json",
-    //   response: "quotes",
-    // })
-    // .get("/:id", handlers.get_quote, {
-    // })
+    (app) =>
+      app.use(routes.get_quote).use(routes.get_quotes).use(routes.add_quote),
     // .post("/", handlers.post_quote, {
     //   body: "quote",
     //   type: "json",
