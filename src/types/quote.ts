@@ -1,7 +1,7 @@
 import { t } from "elysia";
 
 export const quote = t.Object({
-  id: t.Integer(),
+  id: t.Optional(t.Integer()),
   quote: t.String(),
   author: t.String(),
   source: t.String(),

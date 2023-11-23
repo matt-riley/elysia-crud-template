@@ -1,0 +1,28 @@
+services:
+  db: 
+    image: mysql:8.1
+    container_name: quote_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+    ports:
+      - '3306:3306'
+    expose:
+      - 3306
+  api:
+    build: 
+      context: .
+      dockerfile: ./docker/Dockerfile
+    container_name: quote_api
+    ports:
+      - 3000:3000
+    expose:
+      - 3000
+    environment:
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_HOST: ${DB_HOST}

@@ -16,19 +16,16 @@ app.use(
   }),
 );
 
-app.get("/", () => "Hello Elysia");
-
 app
-  .group(
-    "/quotes",
-    (app) =>
-      app.use(routes.get_quote).use(routes.get_quotes).use(routes.add_quote),
-    // .post("/", handlers.post_quote, {
-    //   body: "quote",
-    //   type: "json",
-    // }),
+  .group("/quotes", (app) =>
+    app
+      .use(routes.get_quote)
+      .use(routes.get_quotes)
+      .use(routes.add_quote)
+      .use(routes.delete_quote)
+      .use(routes.update_quote),
   )
-  .listen(3001);
+  .listen(3000);
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
