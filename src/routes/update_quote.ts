@@ -2,7 +2,7 @@ import Elysia from "elysia";
 import { setup } from "./setup";
 import { NewQuote, quotes } from "../db/schema/quote";
 
-export const update_quote = new Elysia().use(setup).post(
+export const update_quote = new Elysia().use(setup).put(
   "/",
   async ({ body, set, db }) => {
     const newQuote: NewQuote = body;
