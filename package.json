@@ -15,7 +15,7 @@
   "devDependencies": {
     "bun-types": "latest",
     "drizzle-kit": "^0.20.2",
-    "typescript": "5.3.3"
+    "typescript": "5.4.2"
   },
   "module": "src/index.js"
 }
