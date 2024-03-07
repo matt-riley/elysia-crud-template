@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@elysiajs/swagger": "0.8.5",
-    "drizzle-orm": "^0.29.0",
+    "drizzle-orm": "^0.30.0",
     "elysia": "latest",
     "mysql2": "^3.6.3"
   },
