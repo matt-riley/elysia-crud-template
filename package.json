@@ -7,7 +7,7 @@
     "start": "./bun src/index.ts"
   },
   "dependencies": {
-    "@elysiajs/swagger": "1.0.5",
+    "@elysiajs/swagger": "1.1.0",
     "drizzle-orm": "^0.32.0",
     "elysia": "latest",
     "mysql2": "^3.6.3"
