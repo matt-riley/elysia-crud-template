@@ -1,6 +1,6 @@
 services:
   db: 
-    image: mysql:9.1
+    image: mysql:9.2
     container_name: quote_db
     restart: always
     environment:
