@@ -1,4 +1,4 @@
-FROM debian:12.11-slim as builder
+FROM debian:12.12-slim as builder
 WORKDIR /app
 
 RUN apt update
@@ -6,7 +6,7 @@ RUN apt install curl unzip -y
 
 RUN curl https://bun.sh/install | bash
 
-FROM debian:12.11-slim as release
+FROM debian:12.12-slim as release
 WORKDIR /app
 
 COPY --from=builder /root/.bun/bin/bun bun
