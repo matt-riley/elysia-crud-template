@@ -1,18 +1,14 @@
 {
-    "$schema": "https://json.schemastore.org/tsconfig",
+  "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Bun",
   "docs": "https://bun.sh/docs/runtime/typescript",
 
   "compilerOptions": {
     // add Bun type definitions
-    "types": [
-      "bun-types"
-    ],
+    "types": ["bun-types"],
 
     // enable latest features
-    "lib": [
-      "ESNext"
-    ],
+    "lib": ["ESNext"],
     "module": "esnext",
     "target": "esnext",
 

@@ -2,19 +2,27 @@
 
 A small starter API using **Elysia** (with Swagger) and **Drizzle ORM** backed by **Postgres**, with Bun tests that run against an in-memory mock DB.
 
-## Quick start
+## What’s included
+
+- Elysia HTTP server with Swagger UI
+- Drizzle ORM + SQL migrations (`./drizzle/migrations`)
+- Postgres via `docker compose` (optional for local dev)
+- Fast unit tests using an in-memory mock DB (no Postgres required)
+- Tooling: GitHub Actions CI, Renovate, oxlint, prettier, husky + lint-staged
+
+## Quick start (Docker)
 
 ```bash
 bun install
 cp .env.example .env
 
-# Option A: Docker (recommended)
 docker compose up -d db
 bun run migrate
 
-# Run the API
 bun run dev
 ```
+
+Then open:
 
 - API: http://localhost:3000
 - Swagger UI: http://localhost:3000/swagger
@@ -22,30 +30,27 @@ bun run dev
 
 ## Scripts
 
-- `bun run dev` – start server in watch mode
-- `bun run start` – start server (no watch)
-- `bun run migrate` – run Drizzle SQL migrations from `./drizzle/migrations`
-- `bun run start:migrate` – run migrations then start (used by Docker image)
-- `bun test` – unit tests (no DB required)
-- `bun run lint` / `bun run lint:fix` – lint with **oxlint**
-- `bun run format` / `bun run format:check` – format with **prettier**
+| Command                                   | Description                                            |
+| ----------------------------------------- | ------------------------------------------------------ |
+| `bun run dev`                             | Start server in watch mode                             |
+| `bun run start`                           | Start server (no watch)                                |
+| `bun run migrate`                         | Run Drizzle SQL migrations from `./drizzle/migrations` |
+| `bun run start:migrate`                   | Run migrations then start (used by Docker image)       |
+| `bun test`                                | Unit tests (no DB required)                            |
+| `bun run lint` / `bun run lint:fix`       | Lint with **oxlint**                                   |
+| `bun run format` / `bun run format:check` | Format with **prettier**                               |
 
 ## Environment
 
-This template expects these variables (copy `.env.example` → `.env`):
+Copy `.env.example` → `.env`.
 
 - `DB_HOST`
-- `DB_PORT` (optional, defaults to 5432)
+- `DB_PORT` (optional, defaults to `5432`)
 - `DB_USER`
 - `DB_PASS`
 - `DB_NAME`
 
 `getDb()` fails fast with a clear error if any required env var is missing.
-
-## Tooling
-
-- **CI**: GitHub Actions runs `bun install --frozen-lockfile` and `bun test`.
-- **Pre-commit**: Husky runs `lint-staged` (oxlint fixes + prettier formatting) on staged files (installed via `prepare: husky`).
 
 ## Example: rate limiting (optional)
 
@@ -56,3 +61,9 @@ import { rateLimit } from "./plugins/rateLimit";
 
 app.use(rateLimit({ windowMs: 60_000, max: 60 }));
 ```
+
+## Project docs
+
+- Contributing: [`CONTRIBUTING.md`](./CONTRIBUTING.md)
+- Security: [`SECURITY.md`](./SECURITY.md)
+- License: [`LICENSE`](./LICENSE)
