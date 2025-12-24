@@ -42,7 +42,7 @@ Validated.
 ```bash
 bun test
 ```
-Validated (5 tests pass). These tests do **not** require a database.
+Validated (10 tests pass). These tests do **not** require a database.
 
 ### Lint
 No linter is configured in this repo (no `lint` script).
