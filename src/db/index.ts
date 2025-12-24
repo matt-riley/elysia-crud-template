@@ -25,12 +25,18 @@ export const injectDb = (nextDb: DbClient) => {
   db = nextDb;
 };
 
+const requireEnv = (key: string) => {
+  const value = process.env[key];
+  if (!value) throw new Error(`Missing required environment variable: ${key}`);
+  return value;
+};
+
 const initEnvDb = async (): Promise<DrizzleDb> => {
   connection = await mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
+    host: requireEnv("DB_HOST"),
+    user: requireEnv("DB_USER"),
+    password: requireEnv("DB_PASS"),
+    database: requireEnv("DB_NAME"),
   });
 
   drizzleDb = drizzle(connection);

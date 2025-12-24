@@ -1,6 +1,6 @@
 services:
-  db: 
-    image: mysql:9.5
+  db:
+    image: mysql:8.4
     container_name: quote_db
     restart: always
     environment:
@@ -9,11 +9,11 @@ services:
       MYSQL_PASSWORD: ${DB_PASS}
       MYSQL_ROOT_PASSWORD: ${DB_PASS}
     ports:
-      - '3306:3306'
+      - "3306:3306"
     expose:
       - 3306
   api:
-    build: 
+    build:
       context: .
       dockerfile: ./docker/Dockerfile
     container_name: quote_api

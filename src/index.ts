@@ -2,8 +2,11 @@ import { Elysia } from "elysia";
 import { swagger } from "@elysiajs/swagger";
 import pkg from "../package.json";
 import * as routes from "./routes";
+import { observability } from "./plugins/observability";
 
 const app = new Elysia();
+
+app.use(observability);
 
 app.use(
   swagger({
@@ -17,6 +20,7 @@ app.use(
 );
 
 app
+  .use(routes.health)
   .group("/quotes", (app) =>
     app
       .use(routes.get_quote)
@@ -27,6 +31,4 @@ app
   )
   .listen(3000);
 
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
-);
+console.log(`Elysia is running at ${app.server?.hostname}:${app.server?.port}`);
