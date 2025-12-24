@@ -1,4 +1,4 @@
-import Elysia from "elysia";
+import type Elysia from "elysia";
 
 export type RateLimitOptions = {
   windowMs?: number;
@@ -26,25 +26,26 @@ export const rateLimit = ({
     }
   };
 
-  return new Elysia({ name: "rateLimit" }).onBeforeHandle(({ request, set }) => {
-    const ts = now();
+  return (app: Elysia) =>
+    app.onBeforeHandle(({ request, set }) => {
+      const ts = now();
 
-    if (ts >= nextCleanupAt) {
-      cleanup(ts);
-      nextCleanupAt = ts + cleanupIntervalMs;
-    }
+      if (ts >= nextCleanupAt) {
+        cleanup(ts);
+        nextCleanupAt = ts + cleanupIntervalMs;
+      }
 
-    const k = key(request);
-    const existing = hits.get(k);
+      const k = key(request);
+      const existing = hits.get(k);
 
-    const bucket =
-      !existing || existing.resetAt <= ts ? { count: 0, resetAt: ts + windowMs } : existing;
-    bucket.count += 1;
-    hits.set(k, bucket);
+      const bucket =
+        !existing || existing.resetAt <= ts ? { count: 0, resetAt: ts + windowMs } : existing;
+      bucket.count += 1;
+      hits.set(k, bucket);
 
-    if (bucket.count > max) {
-      set.status = "Too Many Requests";
-      return { message: "Rate limit exceeded" };
-    }
-  });
+      if (bucket.count > max) {
+        set.status = "Too Many Requests";
+        return { message: "Rate limit exceeded" };
+      }
+    });
 };
