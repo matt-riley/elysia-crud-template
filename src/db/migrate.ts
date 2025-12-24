@@ -3,4 +3,6 @@ import { db, connection } from "./index";
 
 await migrate(db, { migrationsFolder: "./drizzle/migrations" });
 
-await connection.end();
+if (connection) {
+  await connection.end();
+}
