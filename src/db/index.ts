@@ -1,6 +1,5 @@
-import { drizzle } from "drizzle-orm/mysql2";
-import mysql from "mysql2/promise";
-import type { Connection } from "mysql2/promise";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool, type PoolConfig } from "pg";
 
 export type DrizzleDb = ReturnType<typeof drizzle>;
 
@@ -8,13 +7,13 @@ export type DrizzleDb = ReturnType<typeof drizzle>;
 // Use Drizzle's method types for stronger type safety.
 export type DbClient = Pick<DrizzleDb, "select" | "insert" | "update" | "delete">;
 
-let connection: Connection | undefined;
+let pool: Pool | undefined;
 let db: DbClient | undefined;
 let drizzleDb: DrizzleDb | undefined;
 let initPromise: Promise<DrizzleDb> | undefined;
 
 export const resetDb = () => {
-  connection = undefined;
+  pool = undefined;
   db = undefined;
   drizzleDb = undefined;
   initPromise = undefined;
@@ -32,14 +31,16 @@ const requireEnv = (key: string) => {
 };
 
 const initEnvDb = async (): Promise<DrizzleDb> => {
-  connection = await mysql.createConnection({
+  const config: PoolConfig = {
     host: requireEnv("DB_HOST"),
     user: requireEnv("DB_USER"),
     password: requireEnv("DB_PASS"),
     database: requireEnv("DB_NAME"),
-  });
+  };
 
-  drizzleDb = drizzle(connection);
+  pool = new Pool(config);
+
+  drizzleDb = drizzle(pool);
   db = drizzleDb;
   return drizzleDb;
 };
@@ -68,4 +69,4 @@ export const getDrizzleDb = async (): Promise<DrizzleDb> => {
   return await ensureEnvDb();
 };
 
-export const getConnection = () => connection;
+export const getConnection = () => pool;

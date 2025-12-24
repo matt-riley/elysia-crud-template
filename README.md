@@ -1,6 +1,6 @@
-# Elysia CRUD Template (Bun + Drizzle + MySQL)
+# Elysia CRUD Template (Bun + Drizzle + Postgres)
 
-A small starter API using **Elysia** (with Swagger) and **Drizzle ORM** backed by **MySQL**, with Bun tests that run against an in-memory mock DB.
+A small starter API using **Elysia** (with Swagger) and **Drizzle ORM** backed by **Postgres**, with Bun tests that run against an in-memory mock DB.
 
 ## Quick start
 

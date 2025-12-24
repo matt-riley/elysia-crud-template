@@ -1,6 +1,6 @@
 {
   "version": "5",
-  "dialect": "mysql",
+  "dialect": "postgresql",
   "id": "60ef873e-d2b7-4a2a-a666-2bf636113b56",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
@@ -9,8 +9,8 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "bigint",
-          "primaryKey": false,
+          "type": "serial",
+          "primaryKey": true,
           "notNull": true,
           "autoincrement": true
         },
@@ -38,14 +38,7 @@
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "quotes_id": {
-          "name": "quotes_id",
-          "columns": [
-            "id"
-          ]
-        }
-      },
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     }
   },

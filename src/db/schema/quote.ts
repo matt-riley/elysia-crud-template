@@ -1,7 +1,7 @@
-import { bigint, mysqlTable, varchar } from "drizzle-orm/mysql-core";
+import { pgTable, serial, varchar } from "drizzle-orm/pg-core";
 
-export const quotes = mysqlTable("quotes", {
-  id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+export const quotes = pgTable("quotes", {
+  id: serial("id").primaryKey(),
   quote: varchar("quote", { length: 2048 }).notNull(),
   author: varchar("author", { length: 1024 }).notNull(),
   source: varchar("source", { length: 1024 }).notNull(),
