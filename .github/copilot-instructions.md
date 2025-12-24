@@ -111,6 +111,7 @@ If your environment doesn’t have Docker available, you can still run unit test
 ## How to work efficiently in this repo
 - Prefer validating changes with `bun test` first (fast, deterministic, no DB).
 - When modifying handlers, start in `src/routes/*.ts` and ensure they `.use(setup)` so `db` is available.
+- Before claiming a task is finished, **always do a full code review** of your changes (diff + check for edge cases) and ensure tests still pass.
 - Only search the codebase if the information in this file is incomplete or contradicted by the current repo state.
 
 ## Quick reference (repo inventory)
