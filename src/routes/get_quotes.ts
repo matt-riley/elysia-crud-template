@@ -1,26 +1,28 @@
 import Elysia from "elysia";
 import { setup } from "./setup";
 import { quotes } from "../db/schema/quote";
+import { eq, sql } from "drizzle-orm";
 
 export const get_quotes = new Elysia().use(setup).get(
   "/",
   async ({ set, db, query }) => {
-    const prepare_get_quotes = db.select().from(quotes).prepare();
-
-    const found_quotes = await prepare_get_quotes.execute();
-
     const { limit, offset, author } = query;
-    let results = found_quotes;
+
+    let q = db.select().from(quotes);
+    const params: Record<string, unknown> = {};
 
     if (author) {
-      results = results.filter((quote) => quote.author === author);
+      q = q.where(eq(quotes.author, sql.placeholder("author")));
+      params.author = author;
     }
 
-    const start = offset ?? 0;
-    const end = limit != null ? start + limit : undefined;
+    if (limit != null) q = q.limit(limit);
+    if (offset != null) q = q.offset(offset);
+
+    const found_quotes = await q.prepare().execute(params);
 
     set.status = "OK";
-    return results.slice(start, end);
+    return found_quotes;
   },
   {
     type: "json",

@@ -20,19 +20,58 @@ export const createMockDb = (initial: QuoteRow[] = []) => {
   };
 
   const select = () => ({
-    from: () => ({
-      where: () => ({
+    from: () => {
+      const state: { limit?: number; offset?: number } = {};
+
+      const applyWindow = (rows: QuoteRow[]) => {
+        const start = state.offset ?? 0;
+        const end = state.limit != null ? start + state.limit : undefined;
+        return rows.slice(start, end);
+      };
+
+      const builder = {
+        where: () => ({
+          limit: (n: number) => {
+            state.limit = n;
+            return builder;
+          },
+          offset: (n: number) => {
+            state.offset = n;
+            return builder;
+          },
+          prepare: () => ({
+            execute: async ({ id, author }: { id?: number | string; author?: string }) => {
+              let rows = clone(data);
+              if (id != null) {
+                const parsedId = parseNumericId(id);
+                rows = rows.filter((quote) => quote.id === parsedId);
+              }
+              if (author != null) {
+                rows = rows.filter((quote) => quote.author === author);
+              }
+              return applyWindow(rows);
+            },
+          }),
+        }),
+        limit: (n: number) => {
+          state.limit = n;
+          return builder;
+        },
+        offset: (n: number) => {
+          state.offset = n;
+          return builder;
+        },
         prepare: () => ({
-          execute: async ({ id }: { id: number | string }) => {
-            const parsedId = parseNumericId(id);
-            return data.filter((quote) => quote.id === parsedId);
+          execute: async ({ author }: { author?: string } = {}) => {
+            let rows = clone(data);
+            if (author != null) rows = rows.filter((quote) => quote.author === author);
+            return applyWindow(rows);
           },
         }),
-      }),
-      prepare: () => ({
-        execute: async () => clone(data),
-      }),
-    }),
+      };
+
+      return builder;
+    },
   });
 
   const insert = () => ({
