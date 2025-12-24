@@ -3,7 +3,7 @@ import { Elysia } from "elysia";
 import { createMockDb } from "../test/mockDb";
 
 const mockDb = createMockDb();
-(globalThis as { __TEST_DB?: unknown }).__TEST_DB = mockDb;
+(globalThis as { __TEST_DB?: typeof mockDb }).__TEST_DB = mockDb;
 
 const routes = await import("./index");
 
