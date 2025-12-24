@@ -35,6 +35,7 @@ bun run dev
 This template expects these variables (copy `.env.example` → `.env`):
 
 - `DB_HOST`
+- `DB_PORT` (optional, defaults to 5432)
 - `DB_USER`
 - `DB_PASS`
 - `DB_NAME`
