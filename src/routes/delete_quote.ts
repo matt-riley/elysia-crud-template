@@ -11,9 +11,9 @@ export const delete_quote = new Elysia().use(setup).delete(
       .where(eq(quotes.id, sql.placeholder("id")))
       .prepare();
 
-    const quote = await prepare_delete_quote.execute({ id: id });
+    await prepare_delete_quote.execute({ id });
     set.status = "OK";
-    return { id: quote[0].insertId };
+    return { id: Number(id) };
   },
   {
     type: "json",
