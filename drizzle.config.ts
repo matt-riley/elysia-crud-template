@@ -3,7 +3,7 @@ import type { Config } from "drizzle-kit";
 export default {
   schema: "./src/db/schema/quote.ts",
   out: "./drizzle/migrations",
-  driver: "mysql2",
+  driver: "pg",
   dbCredentials: {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
