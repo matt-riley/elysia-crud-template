@@ -77,7 +77,7 @@ export const createMockDb = (initial: QuoteRow[] = []) => {
       lastId = data.reduce((max, { id }) => (id > max ? id : max), 0);
 
       const firstId = data[0]?.id ?? lastId;
-      return firstId !== undefined ? [{ insertId: firstId }] : [];
+      return [{ insertId: firstId }];
     },
   });
 
