@@ -29,12 +29,16 @@ export const createMockDb = (initial: QuoteRow[] = []) => {
 
   const insert = () => ({
     values: async (rows: QuoteRow[]) => {
-      const incoming = rows[0];
-      const id = incoming.id ?? ++lastId;
-      const record: QuoteRow = { ...incoming, id };
-      data.push(record);
-      lastId = Math.max(lastId, id);
-      return [{ insertId: id }];
+      const incomingRows = Array.isArray(rows) ? rows : [rows as unknown as QuoteRow];
+      const results: { insertId: number }[] = [];
+      for (const incoming of incomingRows) {
+        const id = incoming.id ?? ++lastId;
+        const record: QuoteRow = { ...incoming, id };
+        data.push(record);
+        lastId = Math.max(lastId, id);
+        results.push({ insertId: id });
+      }
+      return results;
     },
   });
 
