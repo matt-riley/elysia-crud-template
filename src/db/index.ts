@@ -38,9 +38,17 @@ const initEnvDb = async (): Promise<DrizzleDb> => {
   return drizzleDb;
 };
 
+// Promise-based lock to ensure we only initialize the DB connection once,
+// even if multiple requests call getDb()/getDrizzleDb() concurrently.
 const ensureEnvDb = async (): Promise<DrizzleDb> => {
   if (drizzleDb) return drizzleDb;
-  if (!initPromise) initPromise = initEnvDb();
+  if (!initPromise) {
+    initPromise = initEnvDb().catch((err) => {
+      // Allow retry after a failed init.
+      initPromise = undefined;
+      throw err;
+    });
+  }
   return await initPromise;
 };
 
