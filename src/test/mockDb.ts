@@ -49,7 +49,7 @@ export const createMockDb = (initial: QuoteRow[] = []) => {
           const index = data.findIndex((quote) => quote.id === Number(id));
           if (index === -1) return [];
           const [removed] = data.splice(index, 1);
-          return [{ insertId: removed.id }];
+          return [{ deletedId: removed.id }];
         },
       }),
     }),
