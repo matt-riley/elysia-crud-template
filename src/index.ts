@@ -3,6 +3,7 @@ import { swagger } from "@elysiajs/swagger";
 import pkg from "../package.json";
 import * as routes from "./routes";
 import { observability } from "./plugins/observability";
+import { logger } from "./logger";
 
 const app = new Elysia();
 
@@ -31,4 +32,10 @@ app
   )
   .listen(3000);
 
-console.log(`Elysia is running at ${app.server?.hostname}:${app.server?.port}`);
+logger.info(
+  {
+    hostname: app.server?.hostname,
+    port: app.server?.port,
+  },
+  "server_listening",
+);

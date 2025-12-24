@@ -1,16 +1,18 @@
 import Elysia from "elysia";
 import { randomUUID } from "crypto";
+import type { Logger } from "pino";
+import { logger as defaultLogger } from "../logger";
 
 export type ObservabilityOptions = {
   now?: () => number;
   generateRequestId?: () => string;
-  logger?: (line: string) => void;
+  logger?: Pick<Logger, "info">;
 };
 
 export const observability = ({
   now = () => Date.now(),
   generateRequestId = () => randomUUID(),
-  logger = (line) => console.info(line),
+  logger = defaultLogger,
 }: ObservabilityOptions = {}) =>
   new Elysia({ name: "observability" })
     .derive(({ request, set }) => {
@@ -21,15 +23,16 @@ export const observability = ({
     .onAfterHandle(({ request, requestId, startedAt, set }) => {
       const url = new URL(request.url);
 
-      logger(
-        JSON.stringify({
-          level: "info",
-          msg: "request",
+      const endedAt = now();
+
+      logger.info(
+        {
           requestId,
           method: request.method,
           path: url.pathname,
           status: set.status ?? 200,
-          durationMs: now() - startedAt,
-        }),
+          durationMs: endedAt - startedAt,
+        },
+        "request",
       );
     });

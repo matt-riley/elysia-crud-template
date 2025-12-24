@@ -4,7 +4,7 @@ import { observability } from "./observability";
 
 describe("observability plugin", () => {
   test("sets x-request-id from incoming header and logs", async () => {
-    const logs: string[] = [];
+    const logs: any[] = [];
     let ts = 100;
 
     const app = new Elysia()
@@ -12,7 +12,9 @@ describe("observability plugin", () => {
         observability({
           now: () => ts,
           generateRequestId: () => "generated",
-          logger: (line) => logs.push(line),
+          logger: {
+            info: (obj, msg) => logs.push({ ...(obj as object), msg }),
+          },
         }),
       )
       .get("/path", () => "ok");
@@ -28,8 +30,7 @@ describe("observability plugin", () => {
     expect(res.headers.get("x-request-id")).toBe("incoming");
 
     expect(logs.length).toBe(1);
-    const parsed = JSON.parse(logs[0]);
-    expect(parsed).toMatchObject({
+    expect(logs[0]).toMatchObject({
       msg: "request",
       requestId: "incoming",
       method: "GET",
@@ -39,16 +40,22 @@ describe("observability plugin", () => {
   });
 
   test("generates request id when missing", async () => {
-    const logs: string[] = [];
+    const logs: any[] = [];
 
     const app = new Elysia()
-      .use(observability({ generateRequestId: () => "generated", logger: (l) => logs.push(l) }))
+      .use(
+        observability({
+          generateRequestId: () => "generated",
+          logger: {
+            info: (obj, msg) => logs.push({ ...(obj as object), msg }),
+          },
+        }),
+      )
       .get("/", () => "ok");
 
     const res = await app.handle(new Request("http://localhost/"));
     expect(res.headers.get("x-request-id")).toBe("generated");
 
-    const parsed = JSON.parse(logs[0]);
-    expect(parsed.requestId).toBe("generated");
+    expect(logs[0].requestId).toBe("generated");
   });
 });
