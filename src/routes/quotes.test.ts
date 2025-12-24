@@ -1,12 +1,11 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { Elysia } from "elysia";
 import { injectDb } from "../db";
+import type { DbClient } from "../db";
 import { createMockDb } from "../test/mockDb";
+import * as routes from "./index";
 
-const mockDb = createMockDb();
-injectDb(mockDb);
-
-const routes = await import("./index");
+let mockDb: ReturnType<typeof createMockDb>;
 
 const buildApp = () =>
   new Elysia().group("/quotes", (app) =>
@@ -25,6 +24,8 @@ const initialQuotes = [
 ];
 
 beforeEach(() => {
+  mockDb = createMockDb();
+  injectDb(mockDb as unknown as DbClient);
   mockDb.reset(initialQuotes);
 });
 
@@ -41,6 +42,13 @@ describe("quotes routes", () => {
     const response = await app.handle(new Request(`${baseUrl}/quotes/2`));
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual(initialQuotes[1]);
+  });
+
+  test("returns 404 for a missing quote", async () => {
+    const app = buildApp();
+    const response = await app.handle(new Request(`${baseUrl}/quotes/999`));
+    expect(response.status).toBe(404);
+    await expect(response.json()).resolves.toEqual({ message: "Quote not found" });
   });
 
   test("adds a new quote", async () => {
@@ -83,8 +91,48 @@ describe("quotes routes", () => {
     expect(updateResponse.status).toBe(200);
     await expect(updateResponse.json()).resolves.toEqual({ id: updatedQuote.id });
 
-    const getResponse = await app.handle(new Request(`${baseUrl}/quotes/${updatedQuote.id}`));
-    await expect(getResponse.json()).resolves.toMatchObject(updatedQuote);
+    const getUpdatedResponse = await app.handle(new Request(`${baseUrl}/quotes/${updatedQuote.id}`));
+    await expect(getUpdatedResponse.json()).resolves.toMatchObject(updatedQuote);
+
+    // Ensure other quotes were not modified.
+    const getOtherResponse = await app.handle(new Request(`${baseUrl}/quotes/2`));
+    await expect(getOtherResponse.json()).resolves.toEqual(initialQuotes[1]);
+  });
+
+  test("returns 404 when updating a missing quote", async () => {
+    const app = buildApp();
+    const updateResponse = await app.handle(
+      new Request(`${baseUrl}/quotes`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: 999,
+          quote: "nope",
+          author: "n/a",
+          source: "n/a",
+        }),
+      }),
+    );
+
+    expect(updateResponse.status).toBe(404);
+    await expect(updateResponse.json()).resolves.toEqual({ message: "Quote not found" });
+  });
+
+  test("rejects update without id", async () => {
+    const app = buildApp();
+    const updateResponse = await app.handle(
+      new Request(`${baseUrl}/quotes`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          quote: "missing id",
+          author: "n/a",
+          source: "n/a",
+        }),
+      }),
+    );
+
+    expect(updateResponse.status).toBeGreaterThanOrEqual(400);
   });
 
   test("deletes a quote", async () => {
@@ -93,8 +141,6 @@ describe("quotes routes", () => {
     const deleteResponse = await app.handle(
       new Request(`${baseUrl}/quotes/1`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: "{}",
       }),
     );
 
@@ -104,5 +150,32 @@ describe("quotes routes", () => {
     const listResponse = await app.handle(new Request(`${baseUrl}/quotes`));
     const list = await listResponse.json();
     expect(list.find((quote: { id: number }) => quote.id === 1)).toBeUndefined();
+  });
+
+  test("returns 404 when deleting a missing quote", async () => {
+    const app = buildApp();
+
+    const deleteResponse = await app.handle(
+      new Request(`${baseUrl}/quotes/999`, {
+        method: "DELETE",
+      }),
+    );
+
+    expect(deleteResponse.status).toBe(404);
+    await expect(deleteResponse.json()).resolves.toEqual({ message: "Quote not found" });
+  });
+
+  test("rejects invalid create payload", async () => {
+    const app = buildApp();
+
+    const createResponse = await app.handle(
+      new Request(`${baseUrl}/quotes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ author: "only" }),
+      }),
+    );
+
+    expect(createResponse.status).toBeGreaterThanOrEqual(400);
   });
 });

@@ -12,13 +12,23 @@ export const get_quote = new Elysia().use(setup).get(
       .where(eq(quotes.id, sql.placeholder("id")))
       .prepare();
 
-    const quote = await prepare_get_quote.execute({ id: id });
+    const found = await prepare_get_quote.execute({ id });
+    const quote = found[0];
+
+    if (!quote) {
+      set.status = "Not Found";
+      return { message: "Quote not found" };
+    }
+
     set.status = "OK";
-    return quote[0];
+    return quote;
   },
   {
     type: "json",
-    response: "quote",
+    response: {
+      200: "quote",
+      404: "error",
+    },
     params: "intId",
   },
 );

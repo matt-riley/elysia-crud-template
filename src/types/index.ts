@@ -4,3 +4,7 @@ export { quotes, quote } from "./quote";
 export const numeric_id = t.Object({
   id: t.Numeric(),
 });
+
+export const error = t.Object({
+  message: t.String(),
+});
