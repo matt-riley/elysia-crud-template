@@ -109,6 +109,7 @@ If you want Docker Compose to automatically load env vars, note that Compose’s
 If your environment doesn’t have Docker available, you can still run unit tests (`bun test`) since they use the mock DB.
 
 ## How to work efficiently in this repo
+- Prefer the **simplest, easiest-to-maintain** solution that meets requirements; avoid clever or overly abstract designs unless clearly justified.
 - Prefer validating changes with `bun test` first (fast, deterministic, no DB).
 - When modifying handlers, start in `src/routes/*.ts` and ensure they `.use(setup)` so `db` is available.
 - Before claiming a task is finished, **always do a full code review** of your changes (diff + check for edge cases) and ensure tests still pass.
