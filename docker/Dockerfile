@@ -9,12 +9,12 @@ RUN curl https://bun.sh/install | bash
 FROM debian:13.2-slim as release
 WORKDIR /app
 
-COPY --from=builder /root/.bun/bin/bun bun
+COPY --from=builder /root/.bun/bin/bun /usr/local/bin/bun
 COPY . .
 
-RUN ./bun install
+RUN bun install
 
 ENV NODE_ENV production
-CMD ["./bun", "run", "start"]
+CMD ["bun", "run", "start:migrate"]
 
 EXPOSE 3000

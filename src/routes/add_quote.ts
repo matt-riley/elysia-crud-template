@@ -12,7 +12,7 @@ export const add_quote = new Elysia().use(setup).post(
   },
   {
     type: "json",
-    body: "quote",
+    body: "quoteCreate",
     response: "intId",
   },
 );

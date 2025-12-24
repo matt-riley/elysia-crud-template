@@ -7,4 +7,17 @@ export const quote = t.Object({
   source: t.String(),
 });
 
+export const quoteCreate = t.Object({
+  quote: t.String(),
+  author: t.String(),
+  source: t.String(),
+});
+
+export const quoteUpdate = t.Object({
+  id: t.Integer(),
+  quote: t.String(),
+  author: t.String(),
+  source: t.String(),
+});
+
 export const quotes = t.Array(quote);

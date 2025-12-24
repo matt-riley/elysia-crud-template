@@ -20,7 +20,12 @@ const buildApp = () =>
 const baseUrl = "http://localhost";
 const initialQuotes = [
   { id: 1, quote: "Stay hungry, stay foolish.", author: "Steve Jobs", source: "Stanford" },
-  { id: 2, quote: "Simplicity is the soul of efficiency.", author: "Austin Freeman", source: "Novel" },
+  {
+    id: 2,
+    quote: "Simplicity is the soul of efficiency.",
+    author: "Austin Freeman",
+    source: "Novel",
+  },
 ];
 
 beforeEach(() => {
@@ -35,6 +40,18 @@ describe("quotes routes", () => {
     const response = await app.handle(new Request(`${baseUrl}/quotes`));
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual(initialQuotes);
+  });
+
+  test("supports pagination and filtering", async () => {
+    const app = buildApp();
+
+    const paged = await app.handle(new Request(`${baseUrl}/quotes?limit=1&offset=1`));
+    expect(paged.status).toBe(200);
+    await expect(paged.json()).resolves.toEqual([initialQuotes[1]]);
+
+    const filtered = await app.handle(new Request(`${baseUrl}/quotes?author=Steve%20Jobs`));
+    expect(filtered.status).toBe(200);
+    await expect(filtered.json()).resolves.toEqual([initialQuotes[0]]);
   });
 
   test("returns a single quote by id", async () => {
@@ -91,7 +108,9 @@ describe("quotes routes", () => {
     expect(updateResponse.status).toBe(200);
     await expect(updateResponse.json()).resolves.toEqual({ id: updatedQuote.id });
 
-    const getUpdatedResponse = await app.handle(new Request(`${baseUrl}/quotes/${updatedQuote.id}`));
+    const getUpdatedResponse = await app.handle(
+      new Request(`${baseUrl}/quotes/${updatedQuote.id}`),
+    );
     await expect(getUpdatedResponse.json()).resolves.toMatchObject(updatedQuote);
 
     // Ensure other quotes were not modified.

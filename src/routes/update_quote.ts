@@ -44,6 +44,6 @@ export const update_quote = new Elysia().use(setup).put(
       400: "error",
       404: "error",
     },
-    body: "quote",
+    body: "quoteUpdate",
   },
 );
