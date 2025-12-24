@@ -15,7 +15,8 @@ export const setup = new Elysia({ name: "setup" })
   .onError(({ code, error, set }) => {
     if (code === "VALIDATION") {
       set.status = "Bad Request";
-      return { message: (error as Error).message };
+      const message = error instanceof Error ? error.message : "Invalid request";
+      return { message };
     }
 
     if (code === "NOT_FOUND") {
@@ -23,13 +24,9 @@ export const setup = new Elysia({ name: "setup" })
       return { message: "Not Found" };
     }
 
-    const message = error instanceof Error ? error.message : String(error);
+    // Avoid leaking internal error details to clients.
+    console.error(error);
     set.status = "Internal Server Error";
-
-    if (process.env.NODE_ENV !== "production") {
-      return { message };
-    }
-
     return { message: "Internal Server Error" };
   })
   .derive(async () => ({

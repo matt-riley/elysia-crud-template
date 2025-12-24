@@ -6,7 +6,7 @@ import { observability } from "./plugins/observability";
 
 const app = new Elysia();
 
-app.use(observability);
+app.use(observability());
 
 app.use(
   swagger({
