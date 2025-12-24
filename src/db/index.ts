@@ -52,8 +52,6 @@ const ensureEnvDb = async (): Promise<DrizzleDb> => {
   return await initPromise;
 };
 
-export const getDbCached = () => db;
-
 export const getDb = async (): Promise<DbClient> => {
   if (db) return db;
   await ensureEnvDb();
