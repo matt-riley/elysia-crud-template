@@ -3,7 +3,7 @@ import { setup } from "./setup";
 import { NewQuote, quotes } from "../db/schema/quote";
 import { eq, sql } from "drizzle-orm";
 
-export const update_quote = new Elysia().use(setup).put(
+export const update_quote = new Elysia().use(setup()).put(
   "/",
   async ({ body, set, db }) => {
     const newQuote: NewQuote = body;

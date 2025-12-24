@@ -4,7 +4,16 @@ import { observability } from "./observability";
 
 describe("observability plugin", () => {
   test("sets x-request-id from incoming header and logs", async () => {
-    const logs: any[] = [];
+    type InfoLog = {
+      msg: string;
+      requestId: string;
+      method: string;
+      path: string;
+      status: number;
+      durationMs?: number;
+    };
+
+    const logs: InfoLog[] = [];
     let ts = 100;
 
     const app = new Elysia()
@@ -40,7 +49,16 @@ describe("observability plugin", () => {
   });
 
   test("generates request id when missing", async () => {
-    const logs: any[] = [];
+    type InfoLog = {
+      msg: string;
+      requestId: string;
+      method?: string;
+      path?: string;
+      status?: number;
+      durationMs?: number;
+    };
+
+    const logs: InfoLog[] = [];
 
     const app = new Elysia()
       .use(

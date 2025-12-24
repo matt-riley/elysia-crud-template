@@ -3,7 +3,7 @@ import { setup } from "./setup";
 import { quotes } from "../db/schema/quote";
 import { eq, sql } from "drizzle-orm";
 
-export const get_quotes = new Elysia().use(setup).get(
+export const get_quotes = new Elysia().use(setup()).get(
   "/",
   async ({ set, db, query }) => {
     const { limit, offset, author } = query;
