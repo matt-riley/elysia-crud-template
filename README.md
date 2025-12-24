@@ -9,6 +9,7 @@ A small starter API using **Elysia** (with Swagger) and **Drizzle ORM** backed b
 - Postgres via `docker compose` (optional for local dev)
 - Fast unit tests using an in-memory mock DB (no Postgres required)
 - Tooling: GitHub Actions CI, Renovate, oxlint, prettier, husky + lint-staged
+- Automated releases + `CHANGELOG.md` via Release Please
 
 ## Quick start (Docker)
 
