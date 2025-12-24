@@ -33,6 +33,7 @@ const requireEnv = (key: string) => {
 const initEnvDb = async (): Promise<DrizzleDb> => {
   const config: PoolConfig = {
     host: requireEnv("DB_HOST"),
+    port: process.env.DB_PORT ? Number.parseInt(process.env.DB_PORT, 10) : 5432,
     user: requireEnv("DB_USER"),
     password: requireEnv("DB_PASS"),
     database: requireEnv("DB_NAME"),
