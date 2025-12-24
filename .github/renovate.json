@@ -1,50 +1,93 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base"],
-  "labels": ["dependencies"],
+  "extends": [
+    "config:recommended"
+  ],
+  "labels": [
+    "dependencies"
+  ],
   "automergeStrategy": "rebase",
   "packageRules": [
     {
-      "matchDepTypes": ["devDependencies"],
-      "automerge": true
-    },
-    {
-      "matchUpdateTypes": ["minor", "patch"],
-      "automerge": true
-    },
-    {
-      "matchPackagePatterns": ["^eslint", "^prettier", "^@typescript-eslint"],
-      "labels": ["linting", "dependencies"],
-      "groupName": "linting"
-    },
-    {
-      "matchPackagePatterns": ["^astro", "^@astrojs"],
-      "labels": ["astro", "dependencies"],
-      "groupName": "astro"
-    },
-    {
-      "matchPackagePatterns": ["babel"],
-      "labels": ["babel", "dependencies"],
-      "groupName": "babel"
-    },
-    {
-      "matchPackagePatterns": ["^@types", "^typescript"],
-      "labels": ["typescript", "dependencies"],
-      "groupName": "typescript"
-    },
-    {
-      "matchPackagePatterns": [
-        "^commitizen",
-        "^cz-conventional-changelog",
-        "^standard-version"
+      "matchDepTypes": [
+        "devDependencies"
       ],
-      "labels": ["conventional-commits", "dependencies"],
-      "groupName": "conventional-commits"
+      "automerge": true
     },
     {
-      "matchPackagePatterns": ["^graphql", "^graphiql", "^apollo"],
-      "labels": ["graphql", "dependencies"],
-      "groupName": "graphql"
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "automerge": true
+    },
+    {
+      "labels": [
+        "linting",
+        "dependencies"
+      ],
+      "groupName": "linting",
+      "matchPackageNames": [
+        "/^eslint/",
+        "/^prettier/",
+        "/^@typescript-eslint/"
+      ]
+    },
+    {
+      "labels": [
+        "astro",
+        "dependencies"
+      ],
+      "groupName": "astro",
+      "matchPackageNames": [
+        "/^astro/",
+        "/^@astrojs/"
+      ]
+    },
+    {
+      "labels": [
+        "babel",
+        "dependencies"
+      ],
+      "groupName": "babel",
+      "matchPackageNames": [
+        "/babel/"
+      ]
+    },
+    {
+      "labels": [
+        "typescript",
+        "dependencies"
+      ],
+      "groupName": "typescript",
+      "matchPackageNames": [
+        "/^@types/",
+        "/^typescript/"
+      ]
+    },
+    {
+      "labels": [
+        "conventional-commits",
+        "dependencies"
+      ],
+      "groupName": "conventional-commits",
+      "matchPackageNames": [
+        "/^commitizen/",
+        "/^cz-conventional-changelog/",
+        "/^standard-version/"
+      ]
+    },
+    {
+      "labels": [
+        "graphql",
+        "dependencies"
+      ],
+      "groupName": "graphql",
+      "matchPackageNames": [
+        "/^graphql/",
+        "/^graphiql/",
+        "/^apollo/"
+      ]
     },
     {
       "matchPackageNames": [
@@ -54,33 +97,64 @@
         "tailwindcss",
         "@catppuccin/tailwindcss"
       ],
-      "labels": ["css", "dependencies"],
+      "labels": [
+        "css",
+        "dependencies"
+      ],
       "groupName": "css"
     },
     {
-      "matchPackagePatterns": ["^react"],
-      "labels": ["react", "dependencies"],
-      "groupName": "react"
+      "labels": [
+        "react",
+        "dependencies"
+      ],
+      "groupName": "react",
+      "matchPackageNames": [
+        "/^react/"
+      ]
     },
     {
-      "matchPackagePatterns": ["^webpack", "loader$"],
-      "labels": ["webpack", "dependencies"],
-      "groupName": "webpack"
+      "labels": [
+        "webpack",
+        "dependencies"
+      ],
+      "groupName": "webpack",
+      "matchPackageNames": [
+        "/^webpack/",
+        "/loader$/"
+      ]
     },
     {
-      "matchPackagePatterns": ["^jest", "jest$"],
-      "labels": ["test", "dependencies"],
-      "groupName": "test"
+      "labels": [
+        "test",
+        "dependencies"
+      ],
+      "groupName": "test",
+      "matchPackageNames": [
+        "/^jest/",
+        "/jest$/"
+      ]
     },
     {
-      "matchPackagePatterns": ["^svelte", "^@svelte"],
-      "labels": ["svelte", "dependencies"],
-      "groupName": "svelte"
+      "labels": [
+        "svelte",
+        "dependencies"
+      ],
+      "groupName": "svelte",
+      "matchPackageNames": [
+        "/^svelte/",
+        "/^@svelte/"
+      ]
     },
     {
-      "matchPackagePatterns": ["^@nestjs"],
-      "labels": ["nestjs", "dependencies"],
-      "groupName": "nestjs"
+      "labels": [
+        "nestjs",
+        "dependencies"
+      ],
+      "groupName": "nestjs",
+      "matchPackageNames": [
+        "/^@nestjs/"
+      ]
     }
   ]
 }
