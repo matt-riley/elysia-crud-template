@@ -5,24 +5,27 @@ import type { Connection } from "mysql2/promise";
 export type DrizzleDb = ReturnType<typeof drizzle>;
 
 // Minimal surface used by our route handlers + mock DB.
-export type DbClient = {
-  select: (...args: any[]) => any;
-  insert: (...args: any[]) => any;
-  update: (...args: any[]) => any;
-  delete: (...args: any[]) => any;
-};
+// Use Drizzle's method types for stronger type safety.
+export type DbClient = Pick<DrizzleDb, "select" | "insert" | "update" | "delete">;
 
 let connection: Connection | undefined;
 let db: DbClient | undefined;
 let drizzleDb: DrizzleDb | undefined;
+let initPromise: Promise<DrizzleDb> | undefined;
 
-export const injectDb = (nextDb: DbClient) => {
-  db = nextDb;
-  drizzleDb = undefined;
+export const resetDb = () => {
   connection = undefined;
+  db = undefined;
+  drizzleDb = undefined;
+  initPromise = undefined;
 };
 
-const createEnvDb = async () => {
+export const injectDb = (nextDb: DbClient) => {
+  resetDb();
+  db = nextDb;
+};
+
+const initEnvDb = async (): Promise<DrizzleDb> => {
   connection = await mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -35,15 +38,22 @@ const createEnvDb = async () => {
   return drizzleDb;
 };
 
+const ensureEnvDb = async (): Promise<DrizzleDb> => {
+  if (drizzleDb) return drizzleDb;
+  if (!initPromise) initPromise = initEnvDb();
+  return await initPromise;
+};
+
+export const getDbCached = () => db;
+
 export const getDb = async (): Promise<DbClient> => {
   if (db) return db;
-  await createEnvDb();
+  await ensureEnvDb();
   return db!;
 };
 
 export const getDrizzleDb = async (): Promise<DrizzleDb> => {
-  if (drizzleDb) return drizzleDb;
-  return await createEnvDb();
+  return await ensureEnvDb();
 };
 
 export const getConnection = () => connection;
