@@ -59,17 +59,18 @@ export const createMockDb = (initial: QuoteRow[] = []) => {
     set: async (incoming: Partial<QuoteRow>) => {
       // Mimic Drizzle's behavior when calling `update(...).set(...)` without a `where()`:
       // apply the incoming values to all rows.
+      // Never update the primary key `id` in this bulk operation to avoid duplicate IDs.
       if (data.length === 0) {
         return [];
       }
 
       const updated: QuoteRow[] = [];
+      // Strip `id` from the incoming values so it is not applied to every row.
+      const { id: _ignoredId, ...incomingWithoutId } = incoming;
       for (const quote of data) {
-        const merged = { ...quote, ...incoming } as QuoteRow;
-        // If no id is provided in the incoming data, preserve the existing id.
-        if (incoming.id === undefined) {
-          merged.id = quote.id;
-        }
+        const merged = { ...quote, ...incomingWithoutId } as QuoteRow;
+        // Always preserve the existing id for each row.
+        merged.id = quote.id;
         updated.push(merged);
       }
 
