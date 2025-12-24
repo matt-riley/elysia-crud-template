@@ -80,7 +80,6 @@ export const createMockDb = (initial: QuoteRow[] = []) => {
         if (index !== -1) {
           data[index] = { ...data[index], ...incomingWithoutId, id: targetId } as QuoteRow;
         }
-        lastId = data.reduce((max, { id }) => (id > max ? id : max), 0);
         return [{ insertId: targetId }];
       };
 
