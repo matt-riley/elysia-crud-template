@@ -28,8 +28,8 @@ export const createMockDb = (initial: QuoteRow[] = []) => {
   });
 
   const insert = () => ({
-    values: async (rows: QuoteRow[]) => {
-      const incomingRows = Array.isArray(rows) ? rows : [rows as unknown as QuoteRow];
+    values: async (rows: QuoteRow | QuoteRow[]) => {
+      const incomingRows = Array.isArray(rows) ? rows : [rows];
       const results: { insertId: number }[] = [];
       for (const incoming of incomingRows) {
         const id = incoming.id ?? ++lastId;
