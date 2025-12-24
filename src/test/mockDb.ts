@@ -1,6 +1,6 @@
 import type { Quote } from "../db/schema/quote";
 
-type QuoteRow = Quote & { id: number };
+type QuoteRow = Quote;
 
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value));
 
