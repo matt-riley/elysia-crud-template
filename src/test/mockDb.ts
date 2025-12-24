@@ -56,16 +56,28 @@ export const createMockDb = (initial: QuoteRow[] = []) => {
   });
 
   const update = () => ({
-    set: async (incoming: QuoteRow) => {
-      const id = incoming.id ?? ++lastId;
-      const index = data.findIndex((quote) => quote.id === Number(id));
-      if (index === -1) {
-        data.push({ ...incoming, id });
-      } else {
-        data[index] = { ...data[index], ...incoming, id };
+    set: async (incoming: Partial<QuoteRow>) => {
+      // Mimic Drizzle's behavior when calling `update(...).set(...)` without a `where()`:
+      // apply the incoming values to all rows.
+      if (data.length === 0) {
+        return [];
       }
-      lastId = Math.max(lastId, id);
-      return [{ insertId: id }];
+
+      const updated: QuoteRow[] = [];
+      for (const quote of data) {
+        const merged = { ...quote, ...incoming } as QuoteRow;
+        // If no id is provided in the incoming data, preserve the existing id.
+        if (incoming.id === undefined) {
+          merged.id = quote.id;
+        }
+        updated.push(merged);
+      }
+
+      data = updated;
+      lastId = data.reduce((max, { id }) => (id > max ? id : max), 0);
+
+      const firstId = data[0]?.id ?? lastId;
+      return firstId !== undefined ? [{ insertId: firstId }] : [];
     },
   });
 
