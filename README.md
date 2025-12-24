@@ -44,7 +44,7 @@ This template expects these variables (copy `.env.example` → `.env`):
 ## Tooling
 
 - **CI**: GitHub Actions runs `bun install --frozen-lockfile` and `bun test`.
-- **Pre-commit**: Husky runs `lint-staged` (oxlint fixes + prettier formatting) on staged files.
+- **Pre-commit**: Husky runs `lint-staged` (oxlint fixes + prettier formatting) on staged files (installed via `prepare: husky`).
 
 ## Example: rate limiting (optional)
 
