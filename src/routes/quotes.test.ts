@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { Elysia } from "elysia";
+import { injectDb } from "../db";
 import { createMockDb } from "../test/mockDb";
 
 const mockDb = createMockDb();
-(globalThis as { __TEST_DB?: typeof mockDb }).__TEST_DB = mockDb;
+injectDb(mockDb);
 
 const routes = await import("./index");
 

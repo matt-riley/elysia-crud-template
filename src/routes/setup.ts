@@ -1,6 +1,8 @@
 import Elysia from "elysia";
 import * as types from "../types";
-import { db } from "../db";
+import { getDb } from "../db";
+
+const db = await getDb();
 
 export const setup = new Elysia({ name: "setup" })
   .model({
