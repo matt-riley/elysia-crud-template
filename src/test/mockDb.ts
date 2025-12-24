@@ -50,18 +50,10 @@ export const createMockDb = (initial: QuoteRow[] = []) => {
         return results;
       };
 
-      // Support both:
-      // - await db.insert(table).values(rows)
-      // - db.insert(table).values(rows).prepare().execute()
-      const builder = {
+      return {
         execute,
         prepare: () => ({ execute }),
-        then: (onFulfilled: any, onRejected: any) => execute().then(onFulfilled, onRejected),
-        catch: (onRejected: any) => execute().catch(onRejected),
-        finally: (onFinally: any) => execute().finally(onFinally),
       };
-
-      return builder as any;
     },
   });
 
@@ -81,29 +73,6 @@ export const createMockDb = (initial: QuoteRow[] = []) => {
 
   const update = () => ({
     set: (incoming: Partial<QuoteRow>) => {
-      const executeBulk = async () => {
-        // Mimic Drizzle's behavior when calling `update(...).set(...)` without a `where()`:
-        // apply the incoming values to all rows.
-        // Never update the primary key `id` in this bulk operation to avoid duplicate IDs.
-        if (data.length === 0) {
-          return [];
-        }
-
-        const updated: QuoteRow[] = [];
-        const { id: _ignoredId, ...incomingWithoutId } = incoming;
-        for (const quote of data) {
-          const merged = { ...quote, ...incomingWithoutId } as QuoteRow;
-          merged.id = quote.id;
-          updated.push(merged);
-        }
-
-        data = updated;
-        lastId = data.reduce((max, { id }) => (id > max ? id : max), 0);
-
-        const firstId = data[0]?.id ?? lastId;
-        return [{ insertId: firstId }];
-      };
-
       const executeWhere = async ({ id }: { id: number | string }) => {
         const targetId = parseNumericId(id);
         const { id: _ignoredId, ...incomingWithoutId } = incoming;
@@ -119,11 +88,7 @@ export const createMockDb = (initial: QuoteRow[] = []) => {
         where: () => ({
           prepare: () => ({ execute: executeWhere }),
         }),
-        // Back-compat: await db.update(table).set(values)
-        then: (onFulfilled: any, onRejected: any) => executeBulk().then(onFulfilled, onRejected),
-        catch: (onRejected: any) => executeBulk().catch(onRejected),
-        finally: (onFinally: any) => executeBulk().finally(onFinally),
-      } as any;
+      };
     },
   });
 

@@ -6,7 +6,7 @@ export const add_quote = new Elysia().use(setup).post(
   "/",
   async ({ body, set, db }) => {
     const newQuote: NewQuote = body;
-    const adding_quote = await db.insert(quotes).values([newQuote]);
+    const adding_quote = await db.insert(quotes).values([newQuote]).execute();
     set.status = "OK";
     return { id: adding_quote[0].insertId };
   },
