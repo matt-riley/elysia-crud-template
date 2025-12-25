@@ -4,8 +4,11 @@ FROM oven/bun:1.3.5-slim
 WORKDIR /app
 ENV NODE_ENV=production
 
+# Don't run git hooks / lifecycle scripts during image build
+ENV HUSKY=0
+
 COPY package.json bun.lock* ./
-RUN bun install --frozen-lockfile --production
+RUN bun install --frozen-lockfile --production --ignore-scripts
 
 # Copy app source
 COPY --chown=bun:bun . .
