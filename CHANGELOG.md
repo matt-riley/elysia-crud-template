@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/matt-riley/elysia-crud-template/compare/elysia-crud-template-v0.1.1...elysia-crud-template-v0.1.2) (2025-12-25)
+
+
+### Bug Fixes
+
+* error in dockerfile ([bef7a08](https://github.com/matt-riley/elysia-crud-template/commit/bef7a08ebd80a1705f0394035da916024098fa7c))
+
 ## [0.1.1](https://github.com/matt-riley/elysia-crud-template/compare/elysia-crud-template-v0.1.0...elysia-crud-template-v0.1.1) (2025-12-25)
 
 
