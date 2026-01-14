@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.3](https://github.com/matt-riley/elysia-crud-template/compare/elysia-crud-template-v0.1.2...elysia-crud-template-v0.1.3) (2026-01-14)
+
+
+### Bug Fixes
+
+* **deps:** update dependency elysia to v1.4.20 ([f3fa19b](https://github.com/matt-riley/elysia-crud-template/commit/f3fa19b16d66a4288458e607389b1360ee310180))
+* **deps:** update dependency elysia to v1.4.21 ([1f9f9e0](https://github.com/matt-riley/elysia-crud-template/commit/1f9f9e0d4e7b6c4ad5a1ff6d3172d48130f78410))
+* **deps:** update dependency elysia to v1.4.22 ([83c6361](https://github.com/matt-riley/elysia-crud-template/commit/83c636173be94c9501ea7ecca5c58e78649669cd))
+* **deps:** update dependency pino to v10.1.1 ([f303108](https://github.com/matt-riley/elysia-crud-template/commit/f3031085a91965f7fb695e43a6b683b63c17d117))
+
 ## [0.1.2](https://github.com/matt-riley/elysia-crud-template/compare/elysia-crud-template-v0.1.1...elysia-crud-template-v0.1.2) (2025-12-25)
 
 
