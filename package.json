@@ -1,6 +1,6 @@
 {
   "name": "elysia-crud-template",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "scripts": {
     "dev": "bun run --watch src/index.ts",
     "start": "bun src/index.ts",
