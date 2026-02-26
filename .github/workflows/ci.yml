@@ -6,11 +6,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-      - run: bun install --frozen-lockfile
-      - run: bun test
+    uses: matt-riley/matt-riley-ci/.github/workflows/bun-ci.yml@v1
+    with:
+      require-lockfile: true
+      run-test: true
