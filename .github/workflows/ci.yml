@@ -6,7 +6,7 @@ on:
 
 jobs:
   test:
-    uses: matt-riley/matt-riley-ci/.github/workflows/bun-ci.yml@v1
+    uses: matt-riley/matt-riley-ci/.github/workflows/bun-ci.yml@7bf33bf0eef269c4a4b1d85e1668dec14fb8ffff # v1
     with:
       require-lockfile: true
       run-test: true
