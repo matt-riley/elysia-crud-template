@@ -1,5 +1,5 @@
 # More secure base: official Bun image (no curl|bash install)
-FROM oven/bun:1.3.12-slim
+FROM oven/bun:1.3.13-slim
 
 WORKDIR /app
 ENV NODE_ENV=production
