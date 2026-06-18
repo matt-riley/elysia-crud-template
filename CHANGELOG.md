@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/matt-riley/elysia-crud-template/compare/elysia-crud-template-v0.1.5...elysia-crud-template-v0.2.0) (2026-06-18)
+
+
+### Features
+
+* modernize Elysia CRUD template with best practices ([7ebfd35](https://github.com/matt-riley/elysia-crud-template/commit/7ebfd35106e5e27288410687b58ba6e59ba8192d))
+
 ## [0.1.5](https://github.com/matt-riley/elysia-crud-template/compare/elysia-crud-template-v0.1.4...elysia-crud-template-v0.1.5) (2026-05-22)
 
 ### Bug Fixes
