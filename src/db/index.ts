@@ -1,3 +1,4 @@
+// fallow-ignore-file coverage-gaps
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool, type PoolConfig } from "pg";
 

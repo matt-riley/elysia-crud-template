@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { Elysia } from "elysia";
-import { health } from "./health";
+import { health } from "./index";
 
 describe("health route", () => {
   test("returns ok", async () => {

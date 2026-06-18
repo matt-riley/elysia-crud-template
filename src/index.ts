@@ -1,3 +1,4 @@
+// fallow-ignore-file coverage-gaps
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";

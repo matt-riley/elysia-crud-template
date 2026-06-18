@@ -1,180 +1,188 @@
 import type { Quote } from "../db/schema/quote";
 
 type QuoteRow = Quote;
+type QueryParams = Record<string, unknown>;
+type RowFilterState = {
+  limit?: number;
+  offset?: number;
+  filters: Record<string, unknown>;
+};
+type MockDbState = {
+  data: QuoteRow[];
+  lastId: number;
+};
+type ParsedCondition = { column: string; value: unknown };
 
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value));
+const isObjectRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+const computeLastId = (rows: QuoteRow[]) => rows.reduce((max, { id }) => (id > max ? id : max), 0);
 
-export const createMockDb = (initial: QuoteRow[] = []) => {
-  let data = clone(initial);
-  let lastId = data.reduce((max, { id }) => (id > max ? id : max), 0);
+const parseNumericId = (id: number | string) => {
+  const value = Number(id);
+  if (!Number.isFinite(value)) throw new TypeError(`Invalid id: ${id}`);
+  return value;
+};
 
-  const reset = (next: QuoteRow[]) => {
-    data = clone(next);
-    lastId = data.reduce((max, { id }) => (id > max ? id : max), 0);
-  };
+const parseCondition = (condition: unknown): ParsedCondition | null => {
+  if (!isObjectRecord(condition)) return null;
 
-  const parseNumericId = (id: number | string) => {
-    const value = Number(id);
-    if (!Number.isFinite(value)) throw new TypeError(`Invalid id: ${id}`);
-    return value;
-  };
+  const chunks = condition.queryChunks;
+  if (!Array.isArray(chunks) || chunks.length < 4) return null;
 
-  // --- Select builder (supports both dynamic (await q) and prepared (prepare + execute) ---
-  // Extracts { column, value } from Drizzle eq(column, value) expressions.
-  // eq() returns an SQL object: queryChunks[1] is the column ref, [3] is the value
-  // (wrapped in a Param object when using real PgColumn references).
-  const parseCondition = (condition: unknown): { column: string; value: unknown } | null => {
-    if (!condition || typeof condition !== "object") return null;
-    const c = condition as Record<string, unknown>;
-    const chunks = c.queryChunks as Array<Record<string, unknown> | string> | undefined;
-    if (!Array.isArray(chunks) || chunks.length < 4) return null;
-    const colRef = chunks[1];
-    const rawValue = chunks[3];
-    if (colRef && typeof colRef === "object" && "name" in colRef) {
-      // Drizzle wraps values in a Param { value: ... } when using real PgColumns.
-      // Unwrap to get the plain value.
-      const value =
-        rawValue && typeof rawValue === "object" && "value" in rawValue
-          ? (rawValue as { value: unknown }).value
-          : rawValue;
-      return { column: colRef.name as string, value };
-    }
-    return null;
-  };
+  const columnRef = chunks[1];
+  if (!isObjectRecord(columnRef) || typeof columnRef.name !== "string") return null;
 
-  const createSelectQuery = () => {
-    const state: {
-      limit?: number;
-      offset?: number;
-      filters: Record<string, unknown>;
-    } = { filters: {} };
+  const rawValue = chunks[3];
+  const value = isObjectRecord(rawValue) && "value" in rawValue ? rawValue.value : rawValue;
 
-    const applyWindow = (rows: QuoteRow[]) => {
-      const start = state.offset ?? 0;
-      const end = state.limit != null ? start + state.limit : undefined;
-      return rows.slice(start, end);
-    };
+  return { column: columnRef.name, value };
+};
 
-    const executeInline = (params: Record<string, unknown> = {}, useFilters: boolean = false) => {
-      let rows = clone(data);
+const applyWindow = (rows: QuoteRow[], state: RowFilterState) => {
+  const start = state.offset ?? 0;
+  const end = state.limit != null ? start + state.limit : undefined;
+  return rows.slice(start, end);
+};
 
-      // Prepared-statement params (used by .prepare().execute(params))
-      if ("id" in params) {
-        const parsedId = parseNumericId(params.id as number | string);
-        rows = rows.filter((quote) => quote.id === parsedId);
+const applyPreparedParams = (rows: QuoteRow[], params: QueryParams) => {
+  let next = rows;
+  if ("id" in params) {
+    const parsedId = parseNumericId(params.id as number | string);
+    next = next.filter((quote) => quote.id === parsedId);
+  }
+  if ("author" in params && params.author != null) {
+    next = next.filter((quote) => quote.author === params.author);
+  }
+  return next;
+};
+
+const applyStateFilters = (rows: QuoteRow[], state: RowFilterState) => {
+  let next = rows;
+  if (state.filters.author) {
+    next = next.filter((quote) => quote.author === state.filters.author);
+  }
+  if (state.filters.id) {
+    const parsedId = parseNumericId(state.filters.id as number | string);
+    next = next.filter((quote) => quote.id === parsedId);
+  }
+  return next;
+};
+
+const executeSelect = (
+  state: MockDbState,
+  filterState: RowFilterState,
+  params: QueryParams,
+  useFilters: boolean,
+) => {
+  const baseRows = clone(state.data);
+  const preparedRows = applyPreparedParams(baseRows, params);
+  const filteredRows = useFilters ? applyStateFilters(preparedRows, filterState) : preparedRows;
+  return applyWindow(filteredRows, filterState);
+};
+
+const createSelectQuery = (state: MockDbState) => {
+  const filterState: RowFilterState = { filters: {} };
+  const dynamicBuilder: Record<string, unknown> = {
+    $dynamic: () => dynamicBuilder,
+    where: (condition: unknown) => {
+      const parsed = parseCondition(condition);
+      if (parsed) {
+        filterState.filters[parsed.column] = parsed.value;
       }
-      if ("author" in params && params.author != null) {
-        rows = rows.filter((quote) => quote.author === params.author);
-      }
-
-      // Dynamic $dynamic() + .where() filters (used by await q)
-      if (useFilters) {
-        if (state.filters.author) {
-          rows = rows.filter((quote) => quote.author === state.filters.author);
-        }
-        if (state.filters.id) {
-          const parsedId = parseNumericId(state.filters.id as number | string);
-          rows = rows.filter((quote) => quote.id === parsedId);
-        }
-      }
-
-      return applyWindow(rows);
-    };
-
-    // Dynamic query builder (supports conditional .where/.limit/.offset + await)
-    const dynamicBuilder: Record<string, unknown> = {
-      $dynamic: () => dynamicBuilder,
-      where: (condition: unknown) => {
-        const parsed = parseCondition(condition);
-        if (parsed) {
-          state.filters[parsed.column] = parsed.value;
-        }
-        return dynamicBuilder;
-      },
-      limit: (n: number) => {
-        state.limit = n;
-        return dynamicBuilder;
-      },
-      offset: (n: number) => {
-        state.offset = n;
-        return dynamicBuilder;
-      },
-      // Prepare for named prepared statements (ignores name, uses execute params)
-      prepare: (_name: string) => ({
-        execute: (params: Record<string, unknown>) => executeInline(params, false),
-      }),
-      // Make the dynamic builder thenable so `await q` works
-      then: (resolve: (rows: QuoteRow[]) => void) => {
-        resolve(executeInline({}, true));
-      },
-    };
-
-    return dynamicBuilder;
-  };
-
-  const select = () => ({
-    from: () => createSelectQuery(),
-  });
-
-  // --- Insert builder (supports .values().returning()) ---
-  const insert = () => ({
-    values: (row: QuoteRow) => {
-      const doInsert = () => {
-        const id = row.id ?? ++lastId;
-        const record: QuoteRow = { ...row, id };
-        data.push(record);
-        lastId = Math.max(lastId, id);
-        return [{ id }];
-      };
-
-      return {
-        returning: () => doInsert(),
-      };
+      return dynamicBuilder;
     },
-  });
+    limit: (n: number) => {
+      filterState.limit = n;
+      return dynamicBuilder;
+    },
+    offset: (n: number) => {
+      filterState.offset = n;
+      return dynamicBuilder;
+    },
+    prepare: (_name: string) => ({
+      execute: (params: QueryParams) => executeSelect(state, filterState, params, false),
+    }),
+    then: (resolve: (rows: QuoteRow[]) => void) => {
+      resolve(executeSelect(state, filterState, {}, true));
+    },
+  };
 
-  // --- Delete builder (supports .where().prepare(name).execute(params)) ---
-  const del = () => ({
+  return dynamicBuilder;
+};
+
+const createInsertQuery = (state: MockDbState) => ({
+  values: (row: QuoteRow) => {
+    const doInsert = () => {
+      const id = row.id ?? ++state.lastId;
+      const record: QuoteRow = { ...row, id };
+      state.data.push(record);
+      state.lastId = Math.max(state.lastId, id);
+      return [{ id }];
+    };
+
+    return {
+      returning: () => doInsert(),
+    };
+  },
+});
+
+const createDeleteQuery = (state: MockDbState) => ({
+  where: () => ({
+    prepare: (_name: string) => ({
+      execute: async ({ id }: { id: number | string }) => {
+        const parsedId = parseNumericId(id);
+        const index = state.data.findIndex((quote) => quote.id === parsedId);
+        if (index === -1) return [];
+        const [removed] = state.data.splice(index, 1);
+        return [{ deletedId: removed.id }];
+      },
+    }),
+  }),
+});
+
+const createUpdateQuery = (state: MockDbState) => ({
+  set: (incoming: Partial<QuoteRow>) => ({
     where: () => ({
       prepare: (_name: string) => ({
         execute: async ({ id }: { id: number | string }) => {
-          const parsedId = parseNumericId(id);
-          const index = data.findIndex((quote) => quote.id === parsedId);
-          if (index === -1) return [];
-          const [removed] = data.splice(index, 1);
-          return [{ deletedId: removed.id }];
+          const targetId = parseNumericId(id);
+          const { id: _ignoredId, ...incomingWithoutId } = incoming;
+          const index = state.data.findIndex((quote) => quote.id === targetId);
+          if (index !== -1) {
+            state.data[index] = {
+              ...state.data[index],
+              ...incomingWithoutId,
+              id: targetId,
+            } as QuoteRow;
+          }
+          return [{ insertId: targetId }];
         },
       }),
     }),
-  });
+  }),
+});
 
-  // --- Update builder (supports .set().where().prepare(name).execute(params)) ---
-  const update = () => ({
-    set: (incoming: Partial<QuoteRow>) => ({
-      where: () => ({
-        prepare: (_name: string) => ({
-          execute: async ({ id }: { id: number | string }) => {
-            const targetId = parseNumericId(id);
-            const { id: _ignoredId, ...incomingWithoutId } = incoming;
-            const index = data.findIndex((quote) => quote.id === targetId);
-            if (index !== -1) {
-              data[index] = { ...data[index], ...incomingWithoutId, id: targetId } as QuoteRow;
-            }
-            return [{ insertId: targetId }];
-          },
-        }),
-      }),
-    }),
-  });
+export const createMockDb = (initial: QuoteRow[] = []) => {
+  const state: MockDbState = {
+    data: clone(initial),
+    lastId: computeLastId(initial),
+  };
+  const reset = (next: QuoteRow[]) => {
+    state.data = clone(next);
+    state.lastId = computeLastId(state.data);
+  };
 
   return {
-    select,
-    insert,
-    delete: del,
-    update,
+    select: () => ({
+      from: () => createSelectQuery(state),
+    }),
+    insert: () => createInsertQuery(state),
+    delete: () => createDeleteQuery(state),
+    update: () => createUpdateQuery(state),
     reset,
     get data() {
-      return data;
+      return state.data;
     },
   };
 };

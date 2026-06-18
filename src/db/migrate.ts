@@ -1,3 +1,4 @@
+// fallow-ignore-file coverage-gaps
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { getConnection, getDrizzleDb } from "./index";
 

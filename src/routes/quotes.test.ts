@@ -18,6 +18,7 @@ const buildApp = () =>
   );
 
 const baseUrl = "http://localhost";
+const jsonHeaders = { "Content-Type": "application/json" };
 const initialQuotes = [
   { id: 1, quote: "Stay hungry, stay foolish.", author: "Steve Jobs", source: "Stanford" },
   {
@@ -27,6 +28,12 @@ const initialQuotes = [
     source: "Novel",
   },
 ];
+const requestJson = (url: string, method: "POST" | "PUT", body: unknown) =>
+  new Request(url, {
+    method,
+    headers: jsonHeaders,
+    body: JSON.stringify(body),
+  });
 
 beforeEach(() => {
   mockDb = createMockDb();
@@ -34,7 +41,7 @@ beforeEach(() => {
   mockDb.reset(initialQuotes);
 });
 
-describe("quotes routes", () => {
+describe("quotes routes - reads", () => {
   test("returns all quotes", async () => {
     const app = buildApp();
     const response = await app.handle(new Request(`${baseUrl}/quotes`));
@@ -67,7 +74,9 @@ describe("quotes routes", () => {
     expect(response.status).toBe(404);
     await expect(response.json()).resolves.toEqual({ message: "Quote not found" });
   });
+});
 
+describe("quotes routes - create and update", () => {
   test("adds a new quote", async () => {
     const app = buildApp();
     const newQuote = {
@@ -76,13 +85,7 @@ describe("quotes routes", () => {
       source: "SICP",
     };
 
-    const createResponse = await app.handle(
-      new Request(`${baseUrl}/quotes`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newQuote),
-      }),
-    );
+    const createResponse = await app.handle(requestJson(`${baseUrl}/quotes`, "POST", newQuote));
 
     expect(createResponse.status).toBe(200);
     const created = await createResponse.json();
@@ -97,13 +100,7 @@ describe("quotes routes", () => {
     const app = buildApp();
     const updatedQuote = { ...initialQuotes[0], quote: "Stay hungry, stay curious." };
 
-    const updateResponse = await app.handle(
-      new Request(`${baseUrl}/quotes`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedQuote),
-      }),
-    );
+    const updateResponse = await app.handle(requestJson(`${baseUrl}/quotes`, "PUT", updatedQuote));
 
     expect(updateResponse.status).toBe(200);
     await expect(updateResponse.json()).resolves.toEqual({ id: updatedQuote.id });
@@ -121,15 +118,11 @@ describe("quotes routes", () => {
   test("returns 404 when updating a missing quote", async () => {
     const app = buildApp();
     const updateResponse = await app.handle(
-      new Request(`${baseUrl}/quotes`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: 999,
-          quote: "nope",
-          author: "n/a",
-          source: "n/a",
-        }),
+      requestJson(`${baseUrl}/quotes`, "PUT", {
+        id: 999,
+        quote: "nope",
+        author: "n/a",
+        source: "n/a",
       }),
     );
 
@@ -140,20 +133,18 @@ describe("quotes routes", () => {
   test("rejects update without id", async () => {
     const app = buildApp();
     const updateResponse = await app.handle(
-      new Request(`${baseUrl}/quotes`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          quote: "missing id",
-          author: "n/a",
-          source: "n/a",
-        }),
+      requestJson(`${baseUrl}/quotes`, "PUT", {
+        quote: "missing id",
+        author: "n/a",
+        source: "n/a",
       }),
     );
 
     expect(updateResponse.status).toBeGreaterThanOrEqual(400);
   });
+});
 
+describe("quotes routes - delete and validation", () => {
   test("deletes a quote", async () => {
     const app = buildApp();
 
@@ -188,11 +179,7 @@ describe("quotes routes", () => {
     const app = buildApp();
 
     const createResponse = await app.handle(
-      new Request(`${baseUrl}/quotes`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ author: "only" }),
-      }),
+      requestJson(`${baseUrl}/quotes`, "POST", { author: "only" }),
     );
 
     expect(createResponse.status).toBeGreaterThanOrEqual(400);

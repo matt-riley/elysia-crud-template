@@ -2,33 +2,34 @@ import { describe, expect, test } from "bun:test";
 import { Elysia } from "elysia";
 import { observability } from "./observability";
 
-describe("observability plugin", () => {
-  test("sets x-request-id from incoming header and logs", async () => {
-    type InfoLog = {
-      msg: string;
-      requestId: string;
-      method: string;
-      path: string;
-      status: number;
-      durationMs?: number;
-    };
+type InfoLog = {
+  msg?: string;
+  requestId: string;
+  method?: string;
+  path?: string;
+  status?: number;
+  durationMs?: number;
+};
 
+const createInfoLogger = (logs: InfoLog[]) => ({
+  info: (obj: object, msg?: string, ..._rest: unknown[]) => {
+    logs.push({ ...(obj as Omit<InfoLog, "msg">), msg });
+  },
+});
+
+describe("observability plugin - incoming request id", () => {
+  test("sets x-request-id from incoming header and logs", async () => {
     const logs: InfoLog[] = [];
     let ts = 100;
 
-    const app = new Elysia()
-      .use(
-        observability({
-          now: () => ts,
-          generateRequestId: () => "generated",
-          logger: {
-            info: (obj: object, msg?: string, ..._rest: unknown[]) => {
-              logs.push({ ...obj, msg } as InfoLog);
-            },
-          },
-        }),
-      )
-      .get("/path", () => "ok");
+    const app = new Elysia().use(
+      observability({
+        now: () => ts,
+        generateRequestId: () => "generated",
+        logger: createInfoLogger(logs),
+      }),
+    );
+    app.get("/path", () => "ok");
 
     ts = 100;
     const res = await app.handle(
@@ -49,28 +50,17 @@ describe("observability plugin", () => {
       status: 200,
     });
   });
+});
 
+describe("observability plugin - generated request id", () => {
   test("generates request id when missing", async () => {
-    type InfoLog = {
-      msg: string;
-      requestId: string;
-      method?: string;
-      path?: string;
-      status?: number;
-      durationMs?: number;
-    };
-
     const logs: InfoLog[] = [];
 
     const app = new Elysia()
       .use(
         observability({
           generateRequestId: () => "generated",
-          logger: {
-            info: (obj: object, msg?: string, ..._rest: unknown[]) => {
-              logs.push({ ...obj, msg } as InfoLog);
-            },
-          },
+          logger: createInfoLogger(logs),
         }),
       )
       .get("/", () => "ok");

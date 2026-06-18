@@ -2,6 +2,5 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "entry": ["src/index.ts", "src/db/migrate.ts"],
   "project": ["src/**/*.ts"],
-  "ignoreDependencies": ["@elysiajs/eden"],
   "ignore": ["src/test/**"]
 }

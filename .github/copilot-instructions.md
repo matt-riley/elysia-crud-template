@@ -9,7 +9,7 @@ A Bun + TypeScript API template built with **Elysia** (HTTP server) and **Drizzl
 - Runtime: **Bun** (`bun --version` → 1.3.x)
 - Language: **TypeScript** (`typescript@6.0.3`)
 - Web framework: **Elysia** (`elysia@1.4.x`)
-- Plugins: `@elysiajs/swagger`, `@elysiajs/cors`, `@elysiajs/eden`
+- Plugins: `@elysiajs/swagger`, `@elysiajs/cors`
 - DB/ORM: **drizzle-orm** + **pg** (node-postgres)
 - Migrations: Drizzle Kit (SQL files in `./drizzle/migrations`)
 - Logging: **pino**
