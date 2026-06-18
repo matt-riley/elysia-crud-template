@@ -35,7 +35,9 @@ describe("setup plugin", () => {
       .use(
         setup({
           logger: {
-            error: (obj, msg) => logs.push({ ...(obj as object), msg } as ErrorLog),
+            error: (obj: object, msg?: string, ..._rest: unknown[]) => {
+              logs.push({ ...obj, msg } as ErrorLog);
+            },
           },
         }),
       )
@@ -43,7 +45,11 @@ describe("setup plugin", () => {
         throw new Error("boom");
       });
 
-    const res = await app.handle(new Request("http://localhost/boom"));
+    const res = await app.handle(
+      new Request("http://localhost/boom", {
+        headers: { "x-request-id": "rid" },
+      }),
+    );
 
     expect(res.status).toBe(500);
     await expect(res.json()).resolves.toEqual({ message: "Internal Server Error" });

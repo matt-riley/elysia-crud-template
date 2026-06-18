@@ -1,20 +1,27 @@
-# More secure base: official Bun image (no curl|bash install)
-FROM oven/bun:1.3.14-slim
+# === Production Dockerfile for Elysia + Drizzle + Postgres ===
+#
+# Uses multi-stage build with the official Bun slim image.
+# For an even smaller deployment, you can optionally compile to a
+# standalone binary (see Elysia deploy docs). That requires running
+# migrations separately before deploying the binary.
 
+FROM oven/bun:1.3.14-slim AS base
 WORKDIR /app
 ENV NODE_ENV=production
-
-# Don't run git hooks / lifecycle scripts during image build
 ENV HUSKY=0
 
-COPY package.json bun.lock* ./
+# --- Deps layer (cacheable) ---
+FROM base AS deps
+COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile --production --ignore-scripts
 
-# Copy app source
+# --- Final image ---
+FROM base
+COPY --from=deps /app/node_modules ./node_modules
 COPY --chown=bun:bun . .
 
-# Drop root
 USER bun
-
 EXPOSE 3000
+
+# Run migrations then start the server
 CMD ["bun", "run", "start:migrate"]

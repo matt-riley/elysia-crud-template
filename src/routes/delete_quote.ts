@@ -1,4 +1,4 @@
-import Elysia from "elysia";
+import { Elysia } from "elysia";
 import { setup } from "./setup";
 import { quotes } from "../db/schema/quote";
 import { eq, sql } from "drizzle-orm";
@@ -10,7 +10,7 @@ export const delete_quote = new Elysia().use(setup()).delete(
       .select()
       .from(quotes)
       .where(eq(quotes.id, sql.placeholder("id")))
-      .prepare();
+      .prepare("delete_check_quote");
 
     const found = await prepare_get_quote.execute({ id });
     if (!found[0]) {
@@ -21,7 +21,7 @@ export const delete_quote = new Elysia().use(setup()).delete(
     const prepare_delete_quote = db
       .delete(quotes)
       .where(eq(quotes.id, sql.placeholder("id")))
-      .prepare();
+      .prepare("delete_quote_by_id");
 
     await prepare_delete_quote.execute({ id });
     set.status = "OK";

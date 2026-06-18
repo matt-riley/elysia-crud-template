@@ -1,25 +1,25 @@
-import Elysia from "elysia";
+import { Elysia } from "elysia";
 import { setup } from "./setup";
 import { quotes } from "../db/schema/quote";
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 export const get_quotes = new Elysia().use(setup()).get(
   "/",
   async ({ set, db, query }) => {
     const { limit, offset, author } = query;
 
-    let q = db.select().from(quotes);
-    const params: Record<string, unknown> = {};
+    // Build query dynamically — $dynamic() makes the builder awaitable
+    // so conditional .where/.limit/.offset chains compile cleanly.
+    const q = db.select().from(quotes).$dynamic();
 
     if (author) {
-      q = q.where(eq(quotes.author, sql.placeholder("author")));
-      params.author = author;
+      q.where(eq(quotes.author, author));
     }
 
-    if (limit != null) q = q.limit(limit);
-    if (offset != null) q = q.offset(offset);
+    if (limit != null) q.limit(limit);
+    if (offset != null) q.offset(offset);
 
-    const found_quotes = await q.prepare().execute(params);
+    const found_quotes = await q;
 
     set.status = "OK";
     return found_quotes;

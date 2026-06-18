@@ -1,26 +1,31 @@
 import { Elysia } from "elysia";
+import { cors } from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
-import pkg from "../package.json";
+import pkg from "../package.json" with { type: "json" };
 import * as routes from "./routes";
 import { observability } from "./plugins/observability";
 import { logger } from "./logger";
 
-const app = new Elysia();
-
-app.use(observability());
-
-app.use(
-  swagger({
-    documentation: {
-      info: {
-        title: pkg.name,
-        version: pkg.version,
+const app = new Elysia({
+  aot: Bun.env.NODE_ENV === "production",
+})
+  .use(observability())
+  .use(
+    cors({
+      origin: Bun.env.CORS_ORIGIN ?? true,
+      methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    }),
+  )
+  .use(
+    swagger({
+      documentation: {
+        info: {
+          title: pkg.name,
+          version: pkg.version,
+        },
       },
-    },
-  }),
-);
-
-app
+    }),
+  )
   .use(routes.health)
   .group("/quotes", (app) =>
     app

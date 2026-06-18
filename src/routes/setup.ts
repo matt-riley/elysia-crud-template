@@ -1,4 +1,4 @@
-import type Elysia from "elysia";
+import type { Elysia } from "elysia";
 import type { Logger } from "pino";
 import * as types from "../types";
 import { getDb } from "../db";
@@ -21,7 +21,7 @@ export const setup =
         intId: types.numeric_id,
         error: types.error,
       })
-      .onError(({ code, error, set, requestId, request }) => {
+      .onError(({ code, error, set, request }) => {
         if (code === "VALIDATION") {
           set.status = "Bad Request";
           const message = error instanceof Error ? error.message : "Invalid request";
@@ -34,6 +34,8 @@ export const setup =
         }
 
         // Avoid leaking internal error details to clients.
+        // requestId comes from the observability plugin (x-request-id header).
+        const requestId = request.headers.get("x-request-id") ?? "unknown";
         const url = new URL(request.url);
         const err =
           error instanceof Error

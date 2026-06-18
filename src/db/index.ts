@@ -1,11 +1,10 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool, type PoolConfig } from "pg";
 
+// Do NOT use Pick<> — it strips generics from query builder methods.
+// Use the full concrete type returned by drizzle().
 export type DrizzleDb = ReturnType<typeof drizzle>;
-
-// Minimal surface used by our route handlers + mock DB.
-// Use Drizzle's method types for stronger type safety.
-export type DbClient = Pick<DrizzleDb, "select" | "insert" | "update" | "delete">;
+export type DbClient = DrizzleDb;
 
 let pool: Pool | undefined;
 let db: DbClient | undefined;

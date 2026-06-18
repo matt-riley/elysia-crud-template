@@ -1,13 +1,15 @@
 # Elysia CRUD Template (Bun + Drizzle + Postgres)
 
-A small starter API using **Elysia** (with Swagger) and **Drizzle ORM** backed by **Postgres**, with Bun tests that run against an in-memory mock DB.
+A modern starter API using **Elysia** (with Swagger + CORS) and **Drizzle ORM** backed by **PostgreSQL**, with Bun tests that run against an in-memory mock DB.
 
 ## What’s included
 
-- Elysia HTTP server with Swagger UI
+- Elysia HTTP server with Swagger UI and CORS
 - Drizzle ORM + SQL migrations (`./drizzle/migrations`)
-- Postgres via `docker compose` (optional for local dev)
+- PostgreSQL via `docker compose` (optional for local dev)
 - Fast unit tests using an in-memory mock DB (no Postgres required)
+- Request ID propagation + structured access logging (pino)
+- In-memory rate limiter plugin (optional)
 - Tooling: GitHub Actions CI, Renovate, oxlint, prettier, husky + lint-staged
 - Automated releases + `CHANGELOG.md` via Release Please
 

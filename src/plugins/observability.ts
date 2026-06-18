@@ -1,4 +1,4 @@
-import type Elysia from "elysia";
+import type { Elysia } from "elysia";
 import { randomUUID } from "crypto";
 import type { Logger } from "pino";
 import { logger as defaultLogger } from "../logger";

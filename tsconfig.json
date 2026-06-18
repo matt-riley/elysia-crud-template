@@ -4,15 +4,15 @@
   "docs": "https://bun.sh/docs/runtime/typescript",
 
   "compilerOptions": {
-    // add Bun type definitions
-    "types": ["bun-types"],
+    // Bun ships its own type definitions (no extra package needed)
+    "types": ["bun"],
 
     // enable latest features
     "lib": ["ESNext"],
     "module": "esnext",
     "target": "esnext",
 
-    // if TS 5.x+
+    // Bun-native resolution
     "moduleResolution": "bundler",
     "noEmit": true,
     "allowImportingTsExtensions": true,
@@ -26,6 +26,7 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
 
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "isolatedModules": true
   }
 }

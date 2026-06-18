@@ -22,7 +22,9 @@ describe("observability plugin", () => {
           now: () => ts,
           generateRequestId: () => "generated",
           logger: {
-            info: (obj, msg) => logs.push({ ...(obj as object), msg }),
+            info: (obj: object, msg?: string, ..._rest: unknown[]) => {
+              logs.push({ ...obj, msg } as InfoLog);
+            },
           },
         }),
       )
@@ -65,7 +67,9 @@ describe("observability plugin", () => {
         observability({
           generateRequestId: () => "generated",
           logger: {
-            info: (obj, msg) => logs.push({ ...(obj as object), msg }),
+            info: (obj: object, msg?: string, ..._rest: unknown[]) => {
+              logs.push({ ...obj, msg } as InfoLog);
+            },
           },
         }),
       )

@@ -167,8 +167,8 @@ describe("quotes routes", () => {
     await expect(deleteResponse.json()).resolves.toEqual({ id: 1 });
 
     const listResponse = await app.handle(new Request(`${baseUrl}/quotes`));
-    const list = await listResponse.json();
-    expect(list.find((quote: { id: number }) => quote.id === 1)).toBeUndefined();
+    const list = (await listResponse.json()) as { id: number }[];
+    expect(list.find((quote) => quote.id === 1)).toBeUndefined();
   });
 
   test("returns 404 when deleting a missing quote", async () => {

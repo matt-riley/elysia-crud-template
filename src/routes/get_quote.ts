@@ -1,4 +1,4 @@
-import Elysia from "elysia";
+import { Elysia } from "elysia";
 import { setup } from "./setup";
 import { quotes } from "../db/schema/quote";
 import { eq, sql } from "drizzle-orm";
@@ -10,7 +10,7 @@ export const get_quote = new Elysia().use(setup()).get(
       .select()
       .from(quotes)
       .where(eq(quotes.id, sql.placeholder("id")))
-      .prepare();
+      .prepare("get_quote_by_id");
 
     const found = await prepare_get_quote.execute({ id });
     const quote = found[0];
