@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.1](https://github.com/matt-riley/elysia-crud-template/compare/elysia-crud-template-v0.2.0...elysia-crud-template-v0.2.1) (2026-06-26)
+
+
+### Bug Fixes
+
+* **deps:** update dependency pg to v8.22.0 ([a64b2af](https://github.com/matt-riley/elysia-crud-template/commit/a64b2af59800014530c33ad693c527ae0827a378))
+* **deps:** update elysia to v1.4.2 ([5e51e88](https://github.com/matt-riley/elysia-crud-template/commit/5e51e889fa7a2b455ee1e343d232127f7954f037))
+* resolve fallow health findings ([3bf3c4a](https://github.com/matt-riley/elysia-crud-template/commit/3bf3c4ae59ec74a9c7b99360c1ff61ae1587a497))
+
 ## [0.2.0](https://github.com/matt-riley/elysia-crud-template/compare/elysia-crud-template-v0.1.5...elysia-crud-template-v0.2.0) (2026-06-18)
 
 
