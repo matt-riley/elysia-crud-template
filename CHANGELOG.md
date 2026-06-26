@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/matt-riley/elysia-crud-template/compare/elysia-crud-template-v0.2.1...elysia-crud-template-v0.2.2) (2026-06-26)
+
+
+### Bug Fixes
+
+* run bun ci directly ([825fdf1](https://github.com/matt-riley/elysia-crud-template/commit/825fdf176f1c390df9ac129e571123ab5fe79efb))
+
 ## [0.2.1](https://github.com/matt-riley/elysia-crud-template/compare/elysia-crud-template-v0.2.0...elysia-crud-template-v0.2.1) (2026-06-26)
 
 
