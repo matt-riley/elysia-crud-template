@@ -28,7 +28,7 @@
     "drizzle-kit": "0.31.10",
     "husky": "9.1.7",
     "lint-staged": "17.2.0",
-    "oxlint": "1.75.0",
+    "oxlint": "1.76.0",
     "prettier": "3.9.6",
     "typescript": "7.0.2"
   },
