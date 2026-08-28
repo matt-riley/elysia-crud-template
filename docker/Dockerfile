@@ -5,7 +5,7 @@
 # standalone binary (see Elysia deploy docs). That requires running
 # migrations separately before deploying the binary.
 
-FROM oven/bun:1.3.14-slim AS base
+FROM oven/bun:1.4.0-slim AS base
 WORKDIR /app
 ENV NODE_ENV=production
 ENV HUSKY=0
