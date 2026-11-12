@@ -1,2 +1,10 @@
 [tools]
 bun = "latest"
+
+[tasks.install]
+description = "Install dependencies from the lockfile"
+run = "bun install --frozen-lockfile"
+
+[tasks.test]
+description = "Run tests"
+run = "bun test"
