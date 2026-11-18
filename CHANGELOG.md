@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/matt-riley/elysia-crud-template/compare/elysia-crud-template-v0.2.3...elysia-crud-template-v0.2.4) (2026-11-18)
+
+
+### Bug Fixes
+
+* **deps:** update elysia ([#281](https://github.com/matt-riley/elysia-crud-template/issues/281)) ([1e3b5d7](https://github.com/matt-riley/elysia-crud-template/commit/1e3b5d7633d57d04562ed356f38d1c41f5c2d354))
+
 ## [0.2.3](https://github.com/matt-riley/elysia-crud-template/compare/elysia-crud-template-v0.2.2...elysia-crud-template-v0.2.3) (2026-10-21)
 
 
